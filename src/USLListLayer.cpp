@@ -57,12 +57,6 @@ bool USLListLayer::init() {
 	bottomRightCorner->setID("right-corner");
 	addChild(bottomRightCorner);
 
-	auto logo = CCSprite::create("usl-logo.png"_spr);
-	logo->setScale(0.28f);
-	logo->setPosition({ winSize.width / 2.0f, winSize.height - 45.0f });
-	logo->setID("usl-logo"_spr);
-	addChild(logo);
-
 	m_countLabel = CCLabelBMFont::create("", "goldFont.fnt");
 	m_countLabel->setAnchorPoint({ 1.0f, 1.0f });
 	m_countLabel->setScale(0.6f);
