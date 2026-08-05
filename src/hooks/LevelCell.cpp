@@ -27,12 +27,13 @@ class $modify(USLLevelCell, LevelCell) {
 		auto orbsLabel = mainLayer ? mainLayer->getChildByID("orbs-label") : nullptr;
 		if (!mainLayer || !likesLabel) return;
 
+		auto anchorLabel = orbsLabel ? orbsLabel : likesLabel;
 		float y = m_compactView ? 8.5f : 14.0f;
 		float iconSize = m_compactView ? 9.2f : 13.8f;
 
-		auto icon = CCSprite::create("usl-logo.png"_spr);
+		auto icon = CCSprite::create("usl-logo-round.png"_spr);
 		icon->setScale(iconSize / icon->getContentWidth());
-		icon->setPosition({ likesLabel->getPositionX() + likesLabel->getScaledContentWidth() + 9.0f, y });
+		icon->setPosition({ anchorLabel->getPositionX() + anchorLabel->getScaledContentWidth() + 9.0f, y });
 		icon->setID("usl-rank-icon"_spr);
 		mainLayer->addChild(icon);
 

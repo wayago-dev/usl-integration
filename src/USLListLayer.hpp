@@ -15,7 +15,8 @@ public:
 	~USLListLayer() override;
 protected:
 	geode::async::TaskHolder<geode::utils::web::WebResponse> m_listener;
-	GJListLayer* m_list;
+	cocos2d::CCNode* m_listFrame;
+	BoomListView* m_listView;
 	LoadingCircle* m_loadingCircle;
 	cocos2d::CCLabelBMFont* m_countLabel;
 	cocos2d::CCLabelBMFont* m_pageLabel;

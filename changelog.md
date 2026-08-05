@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.0
+
+- Removed the default green title bar from the list page - replaced with a custom panel header: round USL logo, title and page indicator in one clean row
+- Button icon now fills the whole button (logo scaled up to the circle edge, no white ring)
+- Fixed rank badge in level cells: it was overlapping the orbs stats, now placed after them; square icon replaced with the round logo
+
 ## v1.2.0
 
 - Round USL logo icon in the menu buttons (white-ring circle badge instead of a square tile)

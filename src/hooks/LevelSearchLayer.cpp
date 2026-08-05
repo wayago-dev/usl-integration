@@ -10,6 +10,7 @@ class $modify(USLLevelSearchLayer, LevelSearchLayer) {
 
 		if (Mod::get()->getSettingValue<bool>("enable-search-button")) {
 			auto buttonSprite = CircleButtonSprite::createWithSprite("usl-logo-round.png"_spr, 1.0f, CircleBaseColor::Blue, CircleBaseSize::Medium);
+			buttonSprite->getTopNode()->setScale(buttonSprite->getTopNode()->getScale() * 1.25f);
 			auto button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(USLLevelSearchLayer::onOpenUSL));
 			button->setID("usl-button"_spr);
 			if (auto menu = getChildByID("other-filter-menu")) {
