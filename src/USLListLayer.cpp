@@ -3,11 +3,11 @@
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/binding/CustomListView.hpp>
 #include <Geode/binding/GameLevelManager.hpp>
+#include <Geode/binding/GJListLayer.hpp>
 #include <Geode/binding/GJSearchObject.hpp>
 #include <Geode/binding/LoadingCircle.hpp>
 #include <Geode/binding/SetIDPopup.hpp>
 #include <Geode/loader/Mod.hpp>
-#include <Geode/ui/NineSlice.hpp>
 #include <Geode/ui/TextInput.hpp>
 
 using namespace geode::prelude;
@@ -55,49 +55,34 @@ bool USLListLayer::init() {
 	m_countLabel->setID("level-count-label");
 	addChild(m_countLabel);
 
-	m_listFrame = NineSlice::create("GJ_square02.png", {}, { 16.0f, 16.0f, 16.0f, 16.0f });
-	m_listFrame->setAnchorPoint({ 0.5f, 0.5f });
-	m_listFrame->setContentSize({ 356.0f, 220.0f });
-	m_listFrame->setPosition(winSize / 2.0f);
-	m_listFrame->setID("list-frame");
-	addChild(m_listFrame, 2);
+	m_list = GJListLayer::create(nullptr, "Ultimate Shitty List", { 0, 0, 0, 180 }, 356.0f, 220.0f, 0);
+	m_list->setPosition(winSize / 2.0f - m_list->getContentSize() / 2.0f);
+	m_list->setID("GJListLayer");
+	addChild(m_list, 2);
 
-	auto headerLogo = CCSprite::create("usl-logo-round.png"_spr);
-	headerLogo->setScale(0.055f);
-	headerLogo->setPosition({ 24.0f, 200.0f });
-	headerLogo->setID("header-logo"_spr);
-	m_listFrame->addChild(headerLogo);
-
-	auto titleLabel = CCLabelBMFont::create("Ultimate Shitty List", "bigFont.fnt");
-	titleLabel->setScale(0.6f);
-	titleLabel->setAnchorPoint({ 0.0f, 0.5f });
-	titleLabel->setPosition({ 42.0f, 200.0f });
-	titleLabel->setID("list-title");
-	m_listFrame->addChild(titleLabel);
-
-	auto pageBtnSpr = CCSprite::create("GJ_button_02.png");
-	pageBtnSpr->setScale(0.5f);
-	m_pageLabel = CCLabelBMFont::create("1", "bigFont.fnt");
-	m_pageLabel->setScale(0.55f);
-	m_pageLabel->setPosition(pageBtnSpr->getContentSize() / 2.0f);
-	pageBtnSpr->addChild(m_pageLabel);
-	m_pageButton = CCMenuItemSpriteExtra::create(pageBtnSpr, this, menu_selector(USLListLayer::onPage));
-	m_pageButton->setPosition({ 331.0f, 200.0f });
-	m_pageButton->setID("page-button");
-	auto barMenu = CCMenu::create();
-	barMenu->setPosition({ 0.0f, 0.0f });
-	barMenu->setID("page-menu");
-	barMenu->addChild(m_pageButton);
-	m_listFrame->addChild(barMenu);
+	if (auto title = m_list->getChildByID("title")) {
+		auto pageBtnSpr = CCSprite::create("GJ_button_02.png");
+		pageBtnSpr->setScale(0.5f);
+		m_pageLabel = CCLabelBMFont::create("1", "bigFont.fnt");
+		m_pageLabel->setScale(0.55f);
+		m_pageLabel->setPosition(pageBtnSpr->getContentSize() / 2.0f);
+		pageBtnSpr->addChild(m_pageLabel);
+		m_pageButton = CCMenuItemSpriteExtra::create(pageBtnSpr, this, menu_selector(USLListLayer::onPage));
+		m_pageButton->setID("page-button");
+		auto barMenu = CCMenu::create();
+		barMenu->setPosition({ m_list->getContentWidth() - 25.0f, title->getPositionY() });
+		barMenu->setID("page-menu");
+		barMenu->addChild(m_pageButton);
+		title->getParent()->addChild(barMenu);
+	}
 
 	m_searchBarMenu = CCNode::create();
-	m_searchBarMenu->setPosition({ 0.0f, 0.0f });
+	m_searchBarMenu->setContentSize({ 356.0f, 30.0f });
+	m_searchBarMenu->setPosition({ 0.0f, m_list->getContentHeight() - m_searchBarMenu->getContentHeight() });
 	m_searchBarMenu->setID("search-bar-menu");
-	m_listFrame->addChild(m_searchBarMenu);
+	m_list->addChild(m_searchBarMenu);
 
-	auto searchBg = CCLayerColor::create({ 29, 82, 148, 255 }, 356.0f, 26.0f);
-	searchBg->setAnchorPoint({ 0.0f, 0.0f });
-	searchBg->setPosition({ 0.0f, 170.0f });
+	auto searchBg = CCLayerColor::create({ 29, 82, 148, 255 }, 356.0f, 30.0f);
 	searchBg->setID("search-bar-background");
 	m_searchBarMenu->addChild(searchBg);
 
@@ -111,7 +96,7 @@ bool USLListLayer::init() {
 	m_searchBar->setTextAlign(TextInputAlign::Left);
 	m_searchBar->getInputNode()->setLabelPlaceholderScale(0.6f);
 	m_searchBar->getInputNode()->setMaxLabelScale(0.6f);
-	m_searchBar->setPosition({ 148.0f, 183.0f });
+	m_searchBar->setPosition({ 148.0f, 15.0f });
 	m_searchBar->setID("search-bar");
 	searchMenu->addChild(m_searchBar);
 
@@ -119,16 +104,16 @@ bool USLListLayer::init() {
 		CCSprite::createWithSpriteFrameName("gj_findBtn_001.png"), this, menu_selector(USLListLayer::onSearch)
 	);
 	m_searchButton->setScale(0.7f);
-	m_searchButton->setPosition({ 330.0f, 183.0f });
+	m_searchButton->setPosition({ 330.0f, 15.0f });
 	m_searchButton->setID("search-button");
 	searchMenu->addChild(m_searchButton);
 
 	m_noResultsLabel = CCLabelBMFont::create("No results found", "bigFont.fnt");
 	m_noResultsLabel->setScale(0.5f);
-	m_noResultsLabel->setPosition({ 178.0f, 90.0f });
+	m_noResultsLabel->setPosition({ 178.0f, 100.0f });
 	m_noResultsLabel->setVisible(false);
 	m_noResultsLabel->setID("no-results-label");
-	m_listFrame->addChild(m_noResultsLabel);
+	m_list->addChild(m_noResultsLabel);
 
 	auto menu = CCMenu::create();
 	menu->setPosition({ 0.0f, 0.0f });
@@ -247,7 +232,7 @@ void USLListLayer::onLast(CCObject* sender) {
 void USLListLayer::showLoading() {
 	if (m_pageLabel) m_pageLabel->setString(fmt::to_string(m_page + 1).c_str());
 	m_loadingCircle->setVisible(true);
-	if (m_listView) m_listView->setVisible(false);
+	if (auto listView = m_list->m_listView) listView->setVisible(false);
 	m_countLabel->setVisible(false);
 	m_leftButton->setVisible(false);
 	m_rightButton->setVisible(false);
@@ -278,10 +263,10 @@ void USLListLayer::populateList() {
 		m_searchBarMenu->setVisible(true);
 		m_countLabel->setVisible(false);
 		m_loadingCircle->setVisible(false);
-		if (m_listView) {
-			m_listView->removeFromParent();
-			m_listView->release();
-			m_listView = nullptr;
+		if (auto listView = m_list->m_listView) {
+			listView->removeFromParent();
+			listView->release();
+			m_list->m_listView = nullptr;
 		}
 		if (m_pageButton) m_pageButton->setVisible(false);
 		return;
@@ -308,19 +293,16 @@ void USLListLayer::populateList() {
 }
 
 void USLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
-	if (m_listView) {
-		m_listView->removeFromParent();
-		m_listView->release();
-		m_listView = nullptr;
+	if (auto listView = m_list->m_listView) {
+		listView->removeFromParent();
+		listView->release();
+		m_list->m_listView = nullptr;
 	}
 
-	auto listView = CustomListView::create(levels, BoomListType::Level, 160.0f, 356.0f);
-	listView->setAnchorPoint({ 0.5f, 0.5f });
+	auto listView = CustomListView::create(levels, BoomListType::Level, 190.0f, 356.0f);
 	listView->retain();
-	listView->setPosition({ 178.0f, 90.0f });
-	listView->setID("list-view");
-	m_listFrame->addChild(listView, 6, 9);
-	m_listView = listView;
+	m_list->addChild(listView, 6, 9);
+	m_list->m_listView = listView;
 
 	m_countLabel->setVisible(true);
 	m_loadingCircle->setVisible(false);

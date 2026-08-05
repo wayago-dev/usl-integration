@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.0
+
+- List page rebuilt on the native GD list layout (GJListLayer) like Global-List Integration - the level cells finally render inside the list again
+- Search bar strip (USL blue) inside the list below the title bar, like Global-List but in USL style
+- Rank badge on the level info page moved from the title corner into the stats column, icon reduced to 23px (Global-List style)
+
 ## v1.5.0
 
 - Search bar added to the list page (USL blue strip with text input and search button, like Global-List Integration but in USL style)

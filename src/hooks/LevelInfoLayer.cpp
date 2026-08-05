@@ -32,25 +32,40 @@ class $modify(USLLevelInfoLayer, LevelInfoLayer) {
 	}
 
 	void addRankBadge(int rank) {
-		auto title = getChildByID("title-label");
-		if (!title) return;
+		auto downloadsIcon = getChildByID("downloads-icon");
+		auto lengthIcon = getChildByID("length-icon");
+		if (!downloadsIcon || !m_downloadsLabel || !lengthIcon || !m_lengthLabel ||
+			!m_likesIcon || !m_likesLabel || !m_orbsIcon || !m_orbsLabel) return;
 
-		auto anchor = title->getAnchorPoint();
-		float leftEdge = title->getPositionX() - anchor.x * title->getScaledContentWidth();
-		float iconSize = 28.0f;
-		float titleY = title->getPositionY();
+		downloadsIcon->setPositionY(downloadsIcon->getPositionY() + 10.0f);
+		m_downloadsLabel->setPositionY(m_downloadsLabel->getPositionY() + 10.0f);
+		m_likesIcon->setPositionY(m_likesIcon->getPositionY() + 12.0f);
+		m_likesLabel->setPositionY(m_likesLabel->getPositionY() + 12.0f);
+		lengthIcon->setPositionY(lengthIcon->getPositionY() + 14.0f);
+		m_lengthLabel->setPositionY(m_lengthLabel->getPositionY() + 14.0f);
+		m_exactLengthLabel->setPositionY(m_exactLengthLabel->getPositionY() + 14.0f);
+		m_orbsIcon->setPositionY(m_orbsIcon->getPositionY() + 16.0f);
+		m_orbsLabel->setPositionY(m_orbsLabel->getPositionY() + 16.0f);
 
-		auto badge = CCLabelBMFont::create(fmt::format("#{}", rank).c_str(), "bigFont.fnt");
-		badge->setScale(0.6f);
-		badge->setAnchorPoint({ 1.0f, 0.5f });
-		badge->setPosition({ leftEdge - 8.0f - iconSize - 4.0f, titleY });
-		badge->setColor({ 255, 215, 90 });
-		badge->setID("usl-rank-badge"_spr);
-		addChild(badge, 10);
+		float iconSize = 23.0f;
+		float iconX = lengthIcon->getPositionX() + lengthIcon->getContentWidth() / 2.0f;
+		float iconY = m_orbsIcon->isVisible()
+			? m_orbsIcon->getPositionY() - (downloadsIcon->getPositionY() - m_likesIcon->getPositionY())
+			: lengthIcon->getPositionY() - (m_likesIcon->getPositionY() - lengthIcon->getPositionY());
+
+		auto label = CCLabelBMFont::create(fmt::format("#{}", rank).c_str(), "bigFont.fnt");
+		label->setScale(0.5f);
+		label->setAnchorPoint({ 0.0f, 0.5f });
+		label->setPosition({ iconX, iconY });
+		label->setColor({ 255, 215, 90 });
+		label->setID("usl-rank-badge"_spr);
+		addChild(label, 10);
 
 		auto icon = CCSprite::create("usl-logo-round.png"_spr);
 		icon->setScale(iconSize / icon->getContentWidth());
-		icon->setPosition({ leftEdge - 8.0f - iconSize / 2.0f, titleY });
+		icon->setPosition({
+			label->getPositionX() + label->getScaledContentWidth() + 4.0f + iconSize / 2.0f, iconY
+		});
 		icon->setID("usl-rank-icon"_spr);
 		addChild(icon, 10);
 	}

@@ -16,8 +16,7 @@ public:
 	~USLListLayer() override;
 protected:
 	geode::async::TaskHolder<geode::utils::web::WebResponse> m_listener;
-	cocos2d::CCNode* m_listFrame;
-	BoomListView* m_listView;
+	GJListLayer* m_list;
 	LoadingCircle* m_loadingCircle;
 	cocos2d::CCNode* m_searchBarMenu;
 	geode::TextInput* m_searchBar;
