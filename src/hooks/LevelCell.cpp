@@ -15,6 +15,7 @@ class $modify(USLLevelCell, LevelCell) {
 		LevelCell::loadFromLevel(level);
 
 		if (auto badge = getChildByID("usl-rank-icon"_spr)) badge->removeFromParent();
+		if (auto badge = getChildByID("usl-rank-shadow"_spr)) badge->removeFromParent();
 		if (auto badge = getChildByID("usl-rank-label"_spr)) badge->removeFromParent();
 
 		if (!level || level->m_levelType == GJLevelType::Main || level->m_levelType == GJLevelType::Editor) return;
@@ -39,11 +40,19 @@ class $modify(USLLevelCell, LevelCell) {
 		label->setID("usl-rank-label"_spr);
 		mainLayer->addChild(label);
 
-		auto icon = CCSprite::create("usl-logo-round.png"_spr);
+		float iconX = label->getPositionX() + label->getScaledContentWidth() + (m_compactView ? 5.4f : 3.1f) + iconSize / 2.0f;
+
+		auto shadow = CCSprite::create("usl-logo-ring.png"_spr);
+		shadow->setColor({ 0, 0, 0 });
+		shadow->setOpacity(100);
+		shadow->setScale(iconSize / shadow->getContentWidth());
+		shadow->setPosition({ iconX + 1.0f, y - 1.5f });
+		shadow->setID("usl-rank-shadow"_spr);
+		mainLayer->addChild(shadow);
+
+		auto icon = CCSprite::create("usl-logo-ring.png"_spr);
 		icon->setScale(iconSize / icon->getContentWidth());
-		icon->setPosition({
-			label->getPositionX() + label->getScaledContentWidth() + (m_compactView ? 5.4f : 3.1f) + iconSize / 2.0f, y
-		});
+		icon->setPosition({ iconX, y });
 		icon->setID("usl-rank-icon"_spr);
 		mainLayer->addChild(icon);
 

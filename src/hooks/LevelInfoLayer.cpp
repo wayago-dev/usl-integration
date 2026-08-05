@@ -61,11 +61,19 @@ class $modify(USLLevelInfoLayer, LevelInfoLayer) {
 		label->setID("usl-rank-badge"_spr);
 		addChild(label, 10);
 
-		auto icon = CCSprite::create("usl-logo-round.png"_spr);
+		float iconCenterX = label->getPositionX() + label->getScaledContentWidth() + 4.0f + iconSize / 2.0f;
+
+		auto shadow = CCSprite::create("usl-logo-ring.png"_spr);
+		shadow->setColor({ 0, 0, 0 });
+		shadow->setOpacity(100);
+		shadow->setScale(iconSize / shadow->getContentWidth());
+		shadow->setPosition({ iconCenterX + 1.5f, iconY - 2.0f });
+		shadow->setID("usl-rank-shadow"_spr);
+		addChild(shadow, 10);
+
+		auto icon = CCSprite::create("usl-logo-ring.png"_spr);
 		icon->setScale(iconSize / icon->getContentWidth());
-		icon->setPosition({
-			label->getPositionX() + label->getScaledContentWidth() + 4.0f + iconSize / 2.0f, iconY
-		});
+		icon->setPosition({ iconCenterX, iconY });
 		icon->setID("usl-rank-icon"_spr);
 		addChild(icon, 10);
 	}

@@ -82,10 +82,6 @@ bool USLListLayer::init() {
 	m_searchBarMenu->setID("search-bar-menu");
 	m_list->addChild(m_searchBarMenu);
 
-	auto searchBg = CCLayerColor::create({ 29, 82, 148, 255 }, 356.0f, 30.0f);
-	searchBg->setID("search-bar-background");
-	m_searchBarMenu->addChild(searchBg);
-
 	auto searchMenu = CCMenu::create();
 	searchMenu->setPosition({ 0.0f, 0.0f });
 	searchMenu->setID("search-menu");
@@ -239,7 +235,6 @@ void USLListLayer::showLoading() {
 	m_firstButton->setVisible(false);
 	m_lastButton->setVisible(false);
 	if (m_pageButton) m_pageButton->setVisible(false);
-	m_searchBarMenu->setVisible(false);
 	m_noResultsLabel->setVisible(false);
 }
 

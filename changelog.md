@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.1
+
+- Removed the blue background strip from the search bar - now just the GD-style input and search button
+- Fixed the search button getting stuck in the pressed state (search bar no longer hides during loading)
+- Rank badge icons now have a white outline and drop shadow like GD level icons
+
 ## v1.6.0
 
 - List page rebuilt on the native GD list layout (GJListLayer) like Global-List Integration - the level cells finally render inside the list again
