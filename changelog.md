@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.4
+
+- Search bar now copied verbatim from IntegratedDemonlist: CCMenu at the top of the list, explicit input/button positions, no layout container - sits flush under the title bar like the reference mod
+
 ## v1.6.3
 
 - Fixed search bar position: it was overlapping the list title bar and got clipped. Now it sits fully visible between the title bar and the levels (background unchanged)

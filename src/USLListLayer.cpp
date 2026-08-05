@@ -8,7 +8,6 @@
 #include <Geode/binding/LoadingCircle.hpp>
 #include <Geode/binding/SetIDPopup.hpp>
 #include <Geode/loader/Mod.hpp>
-#include <Geode/ui/Layout.hpp>
 #include <Geode/ui/TextInput.hpp>
 
 using namespace geode::prelude;
@@ -77,44 +76,34 @@ bool USLListLayer::init() {
 		title->getParent()->addChild(barMenu);
 	}
 
-	m_searchBarMenu = CCNode::create();
+	m_searchBarMenu = CCMenu::create();
 	m_searchBarMenu->setContentSize({ 356.0f, 30.0f });
-	m_searchBarMenu->setPosition({ 0.0f, 160.0f });
+	m_searchBarMenu->setPosition({ 0.0f, 190.0f });
 	m_searchBarMenu->setID("search-bar-menu");
 	m_list->addChild(m_searchBarMenu);
 
-	auto searchBarBG = CCLayerColor::create({ 194, 114, 62, 255 }, 356.0f, 30.0f);
-	searchBarBG->setID("search-bar-background");
-	m_searchBarMenu->addChild(searchBarBG);
+	auto searchBackground = CCLayerColor::create({ 194, 114, 62, 255 }, 356.0f, 30.0f);
+	searchBackground->setID("search-bar-background");
+	m_searchBarMenu->addChild(searchBackground);
 
-	auto searchBarContainer = CCMenu::create();
-	searchBarContainer->setLayout(
-		RowLayout::create()
-			->setGap(5.0f)
-			->setAutoScale(false)
-			->setCrossAxisOverflow(false)
-	);
-	searchBarContainer->setContentSize(m_searchBarMenu->getContentSize());
-	searchBarContainer->setAnchorPoint({ 0.0f, 0.0f });
-	searchBarContainer->setPosition({ 0.0f, 0.0f });
-	searchBarContainer->setID("search-bar-container");
-	m_searchBarMenu->addChild(searchBarContainer);
-
-	m_searchBar = TextInput::create(367.0f, "Search levels...");
-	m_searchBar->setMaxCharCount(32);
-	m_searchBar->setTextAlign(TextInputAlign::Left);
-	m_searchBar->getInputNode()->setLabelPlaceholderScale(0.70f);
-	m_searchBar->getInputNode()->setMaxLabelScale(0.70f);
-	m_searchBar->setScale(0.75f);
-	m_searchBar->setID("search-bar");
-	searchBarContainer->addChild(m_searchBar);
-
-	m_searchButton = CCMenuItemSpriteExtra::create(
-		CCSprite::createWithSpriteFrameName("gj_findBtn_001.png"), this, menu_selector(USLListLayer::onSearch)
-	);
-	m_searchButton->setScale(0.7f);
+	auto searchSprite = CCSprite::createWithSpriteFrameName("gj_findBtn_001.png");
+	searchSprite->setScale(0.7f);
+	m_searchButton = CCMenuItemSpriteExtra::create(searchSprite, this, menu_selector(USLListLayer::onSearch));
+	m_searchButton->setPosition({ 337.0f, 15.0f });
 	m_searchButton->setID("search-button");
-	searchBarContainer->addChild(m_searchButton);
+	m_searchBarMenu->addChild(m_searchButton);
+
+	m_searchBar = TextInput::create(310.0f, "Search levels...");
+	m_searchBar->setPosition({ 165.0f, 15.0f });
+	m_searchBar->setTextAlign(TextInputAlign::Left);
+	auto searchInputNode = m_searchBar->getInputNode();
+	searchInputNode->setLabelPlaceholderScale(0.4f);
+	searchInputNode->setMaxLabelScale(0.4f);
+	auto searchBgSprite = m_searchBar->getBGSprite();
+	searchBgSprite->setContentSize({ 620.0f, 40.0f });
+	searchBgSprite->setScale(0.5f);
+	m_searchBar->setID("search-bar");
+	m_searchBarMenu->addChild(m_searchBar);
 
 	m_noResultsLabel = CCLabelBMFont::create("No results found", "bigFont.fnt");
 	m_noResultsLabel->setScale(0.5f);
@@ -310,7 +299,7 @@ void USLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
 		m_list->m_listView = nullptr;
 	}
 
-	auto listView = CustomListView::create(levels, BoomListType::Level, 160.0f, 356.0f);
+	auto listView = CustomListView::create(levels, BoomListType::Level, 190.0f, 356.0f);
 	listView->retain();
 	m_list->addChild(listView, 6, 9);
 	m_list->m_listView = listView;
