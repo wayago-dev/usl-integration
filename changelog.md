@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.3
+
+- Fixed search bar position: it was overlapping the list title bar and got clipped. Now it sits fully visible between the title bar and the levels (background unchanged)
+
 ## v1.6.2
 
 - Search bar now matches Global-List Integration exactly: tan background strip, row-layout container, scaled input and search button

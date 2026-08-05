@@ -79,7 +79,7 @@ bool USLListLayer::init() {
 
 	m_searchBarMenu = CCNode::create();
 	m_searchBarMenu->setContentSize({ 356.0f, 30.0f });
-	m_searchBarMenu->setPosition({ 0.0f, m_list->getContentHeight() - m_searchBarMenu->getContentHeight() });
+	m_searchBarMenu->setPosition({ 0.0f, 160.0f });
 	m_searchBarMenu->setID("search-bar-menu");
 	m_list->addChild(m_searchBarMenu);
 
@@ -118,7 +118,7 @@ bool USLListLayer::init() {
 
 	m_noResultsLabel = CCLabelBMFont::create("No results found", "bigFont.fnt");
 	m_noResultsLabel->setScale(0.5f);
-	m_noResultsLabel->setPosition({ 178.0f, 100.0f });
+	m_noResultsLabel->setPosition({ 178.0f, 80.0f });
 	m_noResultsLabel->setVisible(false);
 	m_noResultsLabel->setID("no-results-label");
 	m_list->addChild(m_noResultsLabel);
@@ -310,7 +310,7 @@ void USLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
 		m_list->m_listView = nullptr;
 	}
 
-	auto listView = CustomListView::create(levels, BoomListType::Level, 190.0f, 356.0f);
+	auto listView = CustomListView::create(levels, BoomListType::Level, 160.0f, 356.0f);
 	listView->retain();
 	m_list->addChild(listView, 6, 9);
 	m_list->m_listView = listView;
