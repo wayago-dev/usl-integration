@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.1
+
+- Rank badge on level info page: added the round USL icon to the right of the #N number
+- Rank badge in level cells: moved the round icon to the right of the #N number
+
 ## v1.4.0
 
 - Fixed broken list panel: the old texture (GJ_panel_02) does not exist in GD 2.2, the panel rendered as a broken magenta/black square. Now uses the native GD 2.2 dark blue panel (GJ_square02) via nine-slice

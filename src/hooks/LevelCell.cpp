@@ -31,19 +31,21 @@ class $modify(USLLevelCell, LevelCell) {
 		float y = m_compactView ? 8.5f : 14.0f;
 		float iconSize = m_compactView ? 9.2f : 13.8f;
 
-		auto icon = CCSprite::create("usl-logo-round.png"_spr);
-		icon->setScale(iconSize / icon->getContentWidth());
-		icon->setPosition({ anchorLabel->getPositionX() + anchorLabel->getScaledContentWidth() + 9.0f, y });
-		icon->setID("usl-rank-icon"_spr);
-		mainLayer->addChild(icon);
-
 		auto label = CCLabelBMFont::create(fmt::format("#{}", demon->rank).c_str(), "bigFont.fnt");
 		label->setScale(m_compactView ? 0.3f : 0.4f);
 		label->setAnchorPoint({ 0.0f, 0.5f });
-		label->setPosition({ icon->getPositionX() + icon->getScaledContentWidth() / 2.0f + (m_compactView ? 5.4f : 3.1f), y });
+		label->setPosition({ anchorLabel->getPositionX() + anchorLabel->getScaledContentWidth() + 7.0f, y });
 		label->setColor({ 255, 215, 90 });
 		label->setID("usl-rank-label"_spr);
 		mainLayer->addChild(label);
+
+		auto icon = CCSprite::create("usl-logo-round.png"_spr);
+		icon->setScale(iconSize / icon->getContentWidth());
+		icon->setPosition({
+			label->getPositionX() + label->getScaledContentWidth() + (m_compactView ? 5.4f : 3.1f) + iconSize / 2.0f, y
+		});
+		icon->setID("usl-rank-icon"_spr);
+		mainLayer->addChild(icon);
 
 		float end = label->getPositionX() + 50.0f;
 		if (end > 350.0f && orbsLabel) {

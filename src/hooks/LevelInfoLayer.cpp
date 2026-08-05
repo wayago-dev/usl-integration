@@ -35,14 +35,23 @@ class $modify(USLLevelInfoLayer, LevelInfoLayer) {
 		auto title = getChildByID("title-label");
 		if (!title) return;
 
+		auto anchor = title->getAnchorPoint();
+		float leftEdge = title->getPositionX() - anchor.x * title->getScaledContentWidth();
+		float iconSize = 28.0f;
+		float titleY = title->getPositionY();
+
 		auto badge = CCLabelBMFont::create(fmt::format("#{}", rank).c_str(), "bigFont.fnt");
 		badge->setScale(0.6f);
 		badge->setAnchorPoint({ 1.0f, 0.5f });
-		auto anchor = title->getAnchorPoint();
-		float leftEdge = title->getPositionX() - anchor.x * title->getScaledContentWidth();
-		badge->setPosition({ leftEdge - 8.0f, title->getPositionY() });
+		badge->setPosition({ leftEdge - 8.0f - iconSize - 4.0f, titleY });
 		badge->setColor({ 255, 215, 90 });
 		badge->setID("usl-rank-badge"_spr);
 		addChild(badge, 10);
+
+		auto icon = CCSprite::create("usl-logo-round.png"_spr);
+		icon->setScale(iconSize / icon->getContentWidth());
+		icon->setPosition({ leftEdge - 8.0f - iconSize / 2.0f, titleY });
+		icon->setID("usl-rank-icon"_spr);
+		addChild(icon, 10);
 	}
 };
