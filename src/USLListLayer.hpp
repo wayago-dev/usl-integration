@@ -1,6 +1,7 @@
 #pragma once
 #include <Geode/binding/LevelManagerDelegate.hpp>
 #include <Geode/binding/SetIDPopupDelegate.hpp>
+#include <Geode/ui/TextInput.hpp>
 #include <Geode/utils/web.hpp>
 
 class USLListLayer : public cocos2d::CCLayer, SetIDPopupDelegate, LevelManagerDelegate {
@@ -18,6 +19,10 @@ protected:
 	cocos2d::CCNode* m_listFrame;
 	BoomListView* m_listView;
 	LoadingCircle* m_loadingCircle;
+	cocos2d::CCNode* m_searchBarMenu;
+	geode::TextInput* m_searchBar;
+	CCMenuItemSpriteExtra* m_searchButton;
+	cocos2d::CCLabelBMFont* m_noResultsLabel;
 	cocos2d::CCLabelBMFont* m_countLabel;
 	cocos2d::CCLabelBMFont* m_pageLabel;
 	CCMenuItemSpriteExtra* m_leftButton;
@@ -28,9 +33,12 @@ protected:
 	geode::CopyableFunction<void(int)> m_failure;
 	int m_page = 0;
 	int m_levelsPerPage = 10;
+	int m_totalLevels = 0;
+	std::string m_query;
 
 	bool init() override;
 	void onBack(cocos2d::CCObject*);
+	void onSearch(cocos2d::CCObject*);
 	void onPrevPage(cocos2d::CCObject*);
 	void onNextPage(cocos2d::CCObject*);
 	void onRefresh(cocos2d::CCObject*);

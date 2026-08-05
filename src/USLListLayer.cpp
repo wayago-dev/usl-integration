@@ -8,6 +8,7 @@
 #include <Geode/binding/SetIDPopup.hpp>
 #include <Geode/loader/Mod.hpp>
 #include <Geode/ui/NineSlice.hpp>
+#include <Geode/ui/TextInput.hpp>
 
 using namespace geode::prelude;
 
@@ -55,6 +56,7 @@ bool USLListLayer::init() {
 	addChild(m_countLabel);
 
 	m_listFrame = NineSlice::create("GJ_square02.png", {}, { 16.0f, 16.0f, 16.0f, 16.0f });
+	m_listFrame->setAnchorPoint({ 0.5f, 0.5f });
 	m_listFrame->setContentSize({ 356.0f, 220.0f });
 	m_listFrame->setPosition(winSize / 2.0f);
 	m_listFrame->setID("list-frame");
@@ -80,12 +82,53 @@ bool USLListLayer::init() {
 	m_pageLabel->setPosition(pageBtnSpr->getContentSize() / 2.0f);
 	pageBtnSpr->addChild(m_pageLabel);
 	m_pageButton = CCMenuItemSpriteExtra::create(pageBtnSpr, this, menu_selector(USLListLayer::onPage));
+	m_pageButton->setPosition({ 331.0f, 200.0f });
 	m_pageButton->setID("page-button");
 	auto barMenu = CCMenu::create();
-	barMenu->setPosition({ 331.0f, 200.0f });
+	barMenu->setPosition({ 0.0f, 0.0f });
 	barMenu->setID("page-menu");
 	barMenu->addChild(m_pageButton);
 	m_listFrame->addChild(barMenu);
+
+	m_searchBarMenu = CCNode::create();
+	m_searchBarMenu->setPosition({ 0.0f, 0.0f });
+	m_searchBarMenu->setID("search-bar-menu");
+	m_listFrame->addChild(m_searchBarMenu);
+
+	auto searchBg = CCLayerColor::create({ 29, 82, 148, 255 }, 356.0f, 26.0f);
+	searchBg->setAnchorPoint({ 0.0f, 0.0f });
+	searchBg->setPosition({ 0.0f, 170.0f });
+	searchBg->setID("search-bar-background");
+	m_searchBarMenu->addChild(searchBg);
+
+	auto searchMenu = CCMenu::create();
+	searchMenu->setPosition({ 0.0f, 0.0f });
+	searchMenu->setID("search-menu");
+	m_searchBarMenu->addChild(searchMenu);
+
+	m_searchBar = TextInput::create(290.0f, "Search levels...");
+	m_searchBar->setMaxCharCount(32);
+	m_searchBar->setTextAlign(TextInputAlign::Left);
+	m_searchBar->getInputNode()->setLabelPlaceholderScale(0.6f);
+	m_searchBar->getInputNode()->setMaxLabelScale(0.6f);
+	m_searchBar->setPosition({ 148.0f, 183.0f });
+	m_searchBar->setID("search-bar");
+	searchMenu->addChild(m_searchBar);
+
+	m_searchButton = CCMenuItemSpriteExtra::create(
+		CCSprite::createWithSpriteFrameName("gj_findBtn_001.png"), this, menu_selector(USLListLayer::onSearch)
+	);
+	m_searchButton->setScale(0.7f);
+	m_searchButton->setPosition({ 330.0f, 183.0f });
+	m_searchButton->setID("search-button");
+	searchMenu->addChild(m_searchButton);
+
+	m_noResultsLabel = CCLabelBMFont::create("No results found", "bigFont.fnt");
+	m_noResultsLabel->setScale(0.5f);
+	m_noResultsLabel->setPosition({ 178.0f, 90.0f });
+	m_noResultsLabel->setVisible(false);
+	m_noResultsLabel->setID("no-results-label");
+	m_listFrame->addChild(m_noResultsLabel);
 
 	auto menu = CCMenu::create();
 	menu->setPosition({ 0.0f, 0.0f });
@@ -187,7 +230,7 @@ void USLListLayer::onRefresh(CCObject* sender) {
 }
 
 void USLListLayer::onPage(CCObject* sender) {
-	auto totalPages = std::max<int>(1, (int)std::ceil((double)USLManager::levels().size() / m_levelsPerPage));
+	auto totalPages = std::max<int>(1, (int)std::ceil((double)m_totalLevels / m_levelsPerPage));
 	auto popup = SetIDPopup::create(m_page + 1, 1, totalPages, "Go to Page", "Go", true, 1, 60.0f, false, false);
 	popup->m_delegate = this;
 	popup->show();
@@ -198,7 +241,7 @@ void USLListLayer::onFirst(CCObject* sender) {
 }
 
 void USLListLayer::onLast(CCObject* sender) {
-	page((int)std::ceil((double)USLManager::levels().size() / m_levelsPerPage) - 1);
+	page((int)std::ceil((double)m_totalLevels / m_levelsPerPage) - 1);
 }
 
 void USLListLayer::showLoading() {
@@ -211,18 +254,36 @@ void USLListLayer::showLoading() {
 	m_firstButton->setVisible(false);
 	m_lastButton->setVisible(false);
 	if (m_pageButton) m_pageButton->setVisible(false);
+	m_searchBarMenu->setVisible(false);
+	m_noResultsLabel->setVisible(false);
+}
+
+void USLListLayer::onSearch(CCObject* sender) {
+	m_query = string::toLower(m_searchBar->getString());
+	m_page = 0;
+	showLoading();
+	populateList();
 }
 
 void USLListLayer::populateList() {
 	std::vector<std::string> ids;
-	auto levels = USLManager::levels();
-	for (int i = m_page * m_levelsPerPage; i < (int)levels.size() && i < (m_page + 1) * m_levelsPerPage; ++i) {
-		ids.push_back(levels[i].levelId);
+	for (auto& demon : USLManager::levels()) {
+		if (!m_query.empty() && !string::toLower(demon.name).contains(m_query)) continue;
+		ids.push_back(demon.levelId);
 	}
+	m_totalLevels = (int)ids.size();
 
 	if (ids.empty()) {
-		loadLevelsFinished(CCArray::create(), "", 0);
-		m_countLabel->setString("");
+		m_noResultsLabel->setVisible(true);
+		m_searchBarMenu->setVisible(true);
+		m_countLabel->setVisible(false);
+		m_loadingCircle->setVisible(false);
+		if (m_listView) {
+			m_listView->removeFromParent();
+			m_listView->release();
+			m_listView = nullptr;
+		}
+		if (m_pageButton) m_pageButton->setVisible(false);
 		return;
 	}
 
@@ -231,8 +292,8 @@ void USLListLayer::populateList() {
 
 	auto searchObject = GJSearchObject::create(SearchType::Type19);
 	std::string query;
-	for (size_t i = 0; i < ids.size(); ++i) {
-		if (i > 0) query += ',';
+	for (int i = m_page * m_levelsPerPage; i < m_totalLevels && i < (m_page + 1) * m_levelsPerPage; ++i) {
+		if (i > m_page * m_levelsPerPage) query += ',';
 		query += ids[i];
 	}
 	searchObject->m_searchQuery = query;
@@ -253,18 +314,20 @@ void USLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
 		m_listView = nullptr;
 	}
 
-	auto listView = CustomListView::create(levels, BoomListType::Level, 190.0f, 356.0f);
+	auto listView = CustomListView::create(levels, BoomListType::Level, 160.0f, 356.0f);
+	listView->setAnchorPoint({ 0.5f, 0.5f });
 	listView->retain();
-	listView->setPosition({ 178.0f, 105.0f });
+	listView->setPosition({ 178.0f, 90.0f });
 	listView->setID("list-view");
 	m_listFrame->addChild(listView, 6, 9);
 	m_listView = listView;
 
 	m_countLabel->setVisible(true);
 	m_loadingCircle->setVisible(false);
-	auto size = USLManager::levels().size();
-	if (size > (size_t)m_levelsPerPage) {
-		auto maxPage = (int)std::ceil((double)size / m_levelsPerPage) - 1;
+	m_searchBarMenu->setVisible(true);
+	m_noResultsLabel->setVisible(m_totalLevels == 0);
+	if (m_totalLevels > m_levelsPerPage) {
+		auto maxPage = (int)std::ceil((double)m_totalLevels / m_levelsPerPage) - 1;
 		m_leftButton->setVisible(m_page > 0);
 		m_rightButton->setVisible(m_page < maxPage);
 		m_firstButton->setVisible(m_page > 0);
@@ -279,18 +342,18 @@ void USLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
 void USLListLayer::loadLevelsFailed(const char*, int) {
 	m_countLabel->setVisible(true);
 	m_loadingCircle->setVisible(false);
+	m_searchBarMenu->setVisible(true);
 	FLAlertLayer::create("Load Failed", "Failed to load levels. Please try again later.", "OK")->show();
 }
 
 void USLListLayer::setupPageInfo(gd::string, const char*) {
-	auto size = USLManager::levels().size();
 	m_countLabel->setString(fmt::format("{} to {} of {}", m_page * m_levelsPerPage + 1,
-		std::min<int>((int)size, (m_page + 1) * m_levelsPerPage), size).c_str());
+		std::min<int>(m_totalLevels, (m_page + 1) * m_levelsPerPage), m_totalLevels).c_str());
 	m_countLabel->limitLabelWidth(100.0f, 0.6f, 0.0f);
 }
 
 void USLListLayer::page(int page) {
-	auto maxPage = (int)std::ceil((double)USLManager::levels().size() / m_levelsPerPage);
+	auto maxPage = (int)std::ceil((double)m_totalLevels / m_levelsPerPage);
 	m_page = maxPage > 0 ? (maxPage + (page % maxPage)) % maxPage : 0;
 	showLoading();
 	populateList();
@@ -306,6 +369,9 @@ void USLListLayer::keyDown(enumKeyCodes key, double timestamp) {
 		case CONTROLLER_Right:
 			if (m_rightButton->isVisible()) page(m_page + 1);
 			break;
+		case KEY_Enter:
+			onSearch(nullptr);
+			break;
 		default:
 			CCLayer::keyDown(key, timestamp);
 			break;
@@ -317,7 +383,7 @@ void USLListLayer::keyBackClicked() {
 }
 
 void USLListLayer::setIDPopupClosed(SetIDPopup*, int page) {
-	auto maxPage = (int)std::ceil((double)USLManager::levels().size() / m_levelsPerPage);
+	auto maxPage = (int)std::ceil((double)m_totalLevels / m_levelsPerPage);
 	m_page = std::clamp<int>(page - 1, 0, maxPage - 1);
 	showLoading();
 	populateList();

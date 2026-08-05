@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.0
+
+- Search bar added to the list page (USL blue strip with text input and search button, like Global-List Integration but in USL style)
+- Fixed the level list rendering outside the panel (anchor/position mismatch)
+- Search filters levels by name locally, Enter key works too
+- "No results found" message when a search matches nothing
+
 ## v1.4.1
 
 - Rank badge on level info page: added the round USL icon to the right of the #N number
