@@ -7,6 +7,7 @@
 #include <Geode/binding/LoadingCircle.hpp>
 #include <Geode/binding/SetIDPopup.hpp>
 #include <Geode/loader/Mod.hpp>
+#include <Geode/ui/NineSlice.hpp>
 
 using namespace geode::prelude;
 
@@ -53,7 +54,7 @@ bool USLListLayer::init() {
 	m_countLabel->setID("level-count-label");
 	addChild(m_countLabel);
 
-	m_listFrame = CCScale9Sprite::create("GJ_panel_02.png");
+	m_listFrame = NineSlice::create("GJ_square02.png", {}, { 16.0f, 16.0f, 16.0f, 16.0f });
 	m_listFrame->setContentSize({ 356.0f, 220.0f });
 	m_listFrame->setPosition(winSize / 2.0f);
 	m_listFrame->setID("list-frame");

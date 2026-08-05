@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.0
+
+- Fixed broken list panel: the old texture (GJ_panel_02) does not exist in GD 2.2, the panel rendered as a broken magenta/black square. Now uses the native GD 2.2 dark blue panel (GJ_square02) via nine-slice
+
 ## v1.3.0
 
 - Removed the default green title bar from the list page - replaced with a custom panel header: round USL logo, title and page indicator in one clean row
