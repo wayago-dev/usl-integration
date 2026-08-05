@@ -47,12 +47,6 @@ bool USLListLayer::init() {
 	dim->setID("background-dim");
 	addChild(dim);
 
-	auto logo = CCSprite::create("usl-logo.png"_spr);
-	logo->setScale(0.1f);
-	logo->setPosition({ 72.0f, winSize.height - 25.0f });
-	logo->setID("usl-logo"_spr);
-	addChild(logo);
-
 	m_countLabel = CCLabelBMFont::create("", "goldFont.fnt");
 	m_countLabel->setAnchorPoint({ 1.0f, 1.0f });
 	m_countLabel->setScale(0.6f);
@@ -64,6 +58,22 @@ bool USLListLayer::init() {
 	m_list->setPosition(winSize / 2.0f - m_list->getContentSize() / 2.0f);
 	m_list->setID("GJListLayer");
 	addChild(m_list, 2);
+
+	if (auto title = m_list->getChildByID("title")) {
+		auto pageBtnSpr = CCSprite::create("GJ_button_02.png");
+		pageBtnSpr->setScale(0.55f);
+		m_pageLabel = CCLabelBMFont::create("1", "bigFont.fnt");
+		m_pageLabel->setScale(0.55f);
+		m_pageLabel->setPosition(pageBtnSpr->getContentSize() / 2.0f);
+		pageBtnSpr->addChild(m_pageLabel);
+		m_pageButton = CCMenuItemSpriteExtra::create(pageBtnSpr, this, menu_selector(USLListLayer::onPage));
+		m_pageButton->setID("page-button");
+		auto barMenu = CCMenu::create();
+		barMenu->setPosition({ m_list->getContentWidth() - 25.0f, title->getPositionY() });
+		barMenu->setID("page-menu");
+		barMenu->addChild(m_pageButton);
+		title->getParent()->addChild(barMenu);
+	}
 
 	auto menu = CCMenu::create();
 	menu->setPosition({ 0.0f, 0.0f });
@@ -96,17 +106,6 @@ bool USLListLayer::init() {
 	refreshButton->setID("refresh-button");
 	menu->addChild(refreshButton, 2);
 
-	auto pageBtnSpr = CCSprite::create("GJ_button_02.png");
-	pageBtnSpr->setScale(0.7f);
-	m_pageLabel = CCLabelBMFont::create("1", "bigFont.fnt");
-	m_pageLabel->setScale(0.8f);
-	m_pageLabel->setPosition(pageBtnSpr->getContentSize() / 2.0f);
-	pageBtnSpr->addChild(m_pageLabel);
-	m_pageButton = CCMenuItemSpriteExtra::create(pageBtnSpr, this, menu_selector(USLListLayer::onPage));
-	m_pageButton->setPositionY(winSize.height - 39.5f);
-	m_pageButton->setID("page-button");
-	menu->addChild(m_pageButton);
-
 	auto lastArrow = CCSprite::createWithSpriteFrameName("GJ_arrow_02_001.png");
 	lastArrow->setFlipX(true);
 	auto otherLastArrow = CCSprite::createWithSpriteFrameName("GJ_arrow_02_001.png");
@@ -115,14 +114,9 @@ bool USLListLayer::init() {
 	lastArrow->addChild(otherLastArrow);
 	lastArrow->setScale(0.4f);
 	m_lastButton = CCMenuItemSpriteExtra::create(lastArrow, this, menu_selector(USLListLayer::onLast));
-	m_lastButton->setPositionY(
-		m_pageButton->getPositionY() - m_pageButton->getContentHeight() / 2.0f - m_lastButton->getContentHeight() / 2.0f - 5.0f);
+	m_lastButton->setPosition({ winSize.width - 21.5f, 21.5f });
 	m_lastButton->setID("last-button");
 	menu->addChild(m_lastButton);
-
-	auto x = winSize.width - m_pageButton->getContentWidth() / 2.0f - 3.0f;
-	m_pageButton->setPositionX(x);
-	m_lastButton->setPositionX(x - 4.0f);
 
 	auto firstArrow = CCSprite::createWithSpriteFrameName("GJ_arrow_02_001.png");
 	auto otherFirstArrow = CCSprite::createWithSpriteFrameName("GJ_arrow_02_001.png");
@@ -130,7 +124,7 @@ bool USLListLayer::init() {
 	firstArrow->addChild(otherFirstArrow);
 	firstArrow->setScale(0.4f);
 	m_firstButton = CCMenuItemSpriteExtra::create(firstArrow, this, menu_selector(USLListLayer::onFirst));
-	m_firstButton->setPosition({ 21.5f, m_lastButton->getPositionY() });
+	m_firstButton->setPosition({ 21.5f, 21.5f });
 	m_firstButton->setID("first-button");
 	menu->addChild(m_firstButton);
 
@@ -196,7 +190,7 @@ void USLListLayer::onLast(CCObject* sender) {
 }
 
 void USLListLayer::showLoading() {
-	m_pageLabel->setString(fmt::to_string(m_page + 1).c_str());
+	if (m_pageLabel) m_pageLabel->setString(fmt::to_string(m_page + 1).c_str());
 	m_loadingCircle->setVisible(true);
 	if (auto listView = m_list->m_listView) listView->setVisible(false);
 	m_countLabel->setVisible(false);
@@ -204,7 +198,7 @@ void USLListLayer::showLoading() {
 	m_rightButton->setVisible(false);
 	m_firstButton->setVisible(false);
 	m_lastButton->setVisible(false);
-	m_pageButton->setVisible(false);
+	if (m_pageButton) m_pageButton->setVisible(false);
 }
 
 void USLListLayer::populateList() {
@@ -260,7 +254,10 @@ void USLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
 		m_rightButton->setVisible(m_page < maxPage);
 		m_firstButton->setVisible(m_page > 0);
 		m_lastButton->setVisible(m_page < maxPage);
-		m_pageButton->setVisible(true);
+		if (m_pageButton) m_pageButton->setVisible(true);
+	}
+	else if (m_pageButton) {
+		m_pageButton->setVisible(false);
 	}
 }
 
