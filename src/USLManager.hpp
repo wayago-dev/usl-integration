@@ -16,6 +16,7 @@ namespace USLManager {
 	std::vector<USLDemon>& levels();
 	bool isLoaded();
 	std::string apiUrl();
+	USLDemon const* findByLevelId(std::string const& levelId);
 
 	void load(
 		geode::async::TaskHolder<geode::utils::web::WebResponse>& listener,

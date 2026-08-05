@@ -9,9 +9,7 @@ class $modify(USLMenuLayer, MenuLayer) {
 		if (!MenuLayer::init()) return false;
 
 		if (Mod::get()->getSettingValue<bool>("enable-main-menu-button")) {
-			auto buttonSprite = CircleButtonSprite::createWithSprite("usl-logo.png"_spr);
-			buttonSprite->getTopNode()->setScale(1.0f);
-			buttonSprite->setScale(0.8f);
+			auto buttonSprite = CircleButtonSprite::createWithSprite("usl-logo.png"_spr, 1.0f, CircleBaseColor::Blue, CircleBaseSize::Small);
 			auto button = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(USLMenuLayer::onOpenUSL));
 			button->setID("usl-button"_spr);
 			if (auto menu = getChildByID("bottom-menu")) {

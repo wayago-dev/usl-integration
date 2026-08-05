@@ -18,6 +18,13 @@ std::string USLManager::apiUrl() {
 	return Mod::get()->getSettingValue<std::string>("api-url");
 }
 
+USLDemon const* USLManager::findByLevelId(std::string const& levelId) {
+	for (auto& demon : s_levels) {
+		if (demon.levelId == levelId) return &demon;
+	}
+	return nullptr;
+}
+
 void USLManager::load(TaskHolder<web::WebResponse>& listener, Function<void()> success, CopyableFunction<void(int)> failure) {
 	listener.spawn(
 		web::WebRequest().get(apiUrl()),

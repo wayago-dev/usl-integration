@@ -3,14 +3,15 @@
 	"gd": {
 		"win": "2.2081"
 	},
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"id": "wayago.usl-integration",
 	"name": "USL Integration",
 	"developer": "wayago",
 	"description": "Browse the official Ultimate Shitty List demon ranking inside Geometry Dash and play the levels with one click.",
 	"resources": {
 		"sprites": [
-			"resources/*.png"
+			"resources/*.png",
+			"resources/*.jpg"
 		]
 	},
 	"settings": {

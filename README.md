@@ -10,6 +10,7 @@ Browse the official **Ultimate Shitty List** demon ranking right inside Geometry
 - **USL button** on the level search screen and in the main menu
 - **Live data** - the list is fetched from the [USL API](https://ultimateshittylist.space/api/levels), so new placements appear as soon as they are published
 - **Real GD levels** - every row is the actual level from the Geometry Dash servers, click it to play
+- **Rank badges** - every USL level shows its #placement in the list, on the level info page and in level search results
 - **Pagination** - first, previous, next, last page and jump-to-page
 - **Refresh** button to pull the latest list at any time
 - **Settings**: API URL, levels per page, which buttons to show

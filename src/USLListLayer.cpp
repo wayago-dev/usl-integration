@@ -35,27 +35,23 @@ bool USLListLayer::init() {
 	auto winSize = CCDirector::get()->getWinSize();
 	m_levelsPerPage = (int)Mod::get()->getSettingValue<int64_t>("levels-per-page");
 
-	auto bg = CCSprite::create("GJ_gradientBG.png");
-	bg->setAnchorPoint({ 0.0f, 0.0f });
-	bg->setScaleX((winSize.width + 10.0f) / bg->getTextureRect().size.width);
-	bg->setScaleY((winSize.height + 10.0f) / bg->getTextureRect().size.height);
-	bg->setPosition({ -5.0f, -5.0f });
-	bg->setColor({ 29, 82, 148 });
+	auto bg = CCSprite::create("usl-bg.png"_spr);
+	bg->setAnchorPoint({ 0.5f, 0.5f });
+	auto bgSize = bg->getTextureRect().size;
+	bg->setScale(std::max(winSize.width / bgSize.width, winSize.height / bgSize.height));
+	bg->setPosition(winSize / 2.0f);
 	bg->setID("background");
 	addChild(bg);
 
-	auto bottomLeftCorner = CCSprite::createWithSpriteFrameName("gauntletCorner_001.png");
-	bottomLeftCorner->setPosition({ -1.0f, -1.0f });
-	bottomLeftCorner->setAnchorPoint({ 0.0f, 0.0f });
-	bottomLeftCorner->setID("left-corner");
-	addChild(bottomLeftCorner);
+	auto dim = CCLayerColor::create({ 0, 0, 0, 110 }, winSize.width, winSize.height);
+	dim->setID("background-dim");
+	addChild(dim);
 
-	auto bottomRightCorner = CCSprite::createWithSpriteFrameName("gauntletCorner_001.png");
-	bottomRightCorner->setPosition({ winSize.width + 1.0f, -1.0f });
-	bottomRightCorner->setAnchorPoint({ 1.0f, 0.0f });
-	bottomRightCorner->setFlipX(true);
-	bottomRightCorner->setID("right-corner");
-	addChild(bottomRightCorner);
+	auto logo = CCSprite::create("usl-logo.png"_spr);
+	logo->setScale(0.1f);
+	logo->setPosition({ 72.0f, winSize.height - 25.0f });
+	logo->setID("usl-logo"_spr);
+	addChild(logo);
 
 	m_countLabel = CCLabelBMFont::create("", "goldFont.fnt");
 	m_countLabel->setAnchorPoint({ 1.0f, 1.0f });
