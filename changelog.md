@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.2
+
+- Search bar now matches Global-List Integration exactly: tan background strip, row-layout container, scaled input and search button
+
 ## v1.6.1
 
 - Removed the blue background strip from the search bar - now just the GD-style input and search button

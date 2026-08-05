@@ -8,6 +8,7 @@
 #include <Geode/binding/LoadingCircle.hpp>
 #include <Geode/binding/SetIDPopup.hpp>
 #include <Geode/loader/Mod.hpp>
+#include <Geode/ui/Layout.hpp>
 #include <Geode/ui/TextInput.hpp>
 
 using namespace geode::prelude;
@@ -82,27 +83,38 @@ bool USLListLayer::init() {
 	m_searchBarMenu->setID("search-bar-menu");
 	m_list->addChild(m_searchBarMenu);
 
-	auto searchMenu = CCMenu::create();
-	searchMenu->setPosition({ 0.0f, 0.0f });
-	searchMenu->setID("search-menu");
-	m_searchBarMenu->addChild(searchMenu);
+	auto searchBarBG = CCLayerColor::create({ 194, 114, 62, 255 }, 356.0f, 30.0f);
+	searchBarBG->setID("search-bar-background");
+	m_searchBarMenu->addChild(searchBarBG);
 
-	m_searchBar = TextInput::create(290.0f, "Search levels...");
+	auto searchBarContainer = CCMenu::create();
+	searchBarContainer->setLayout(
+		RowLayout::create()
+			->setGap(5.0f)
+			->setAutoScale(false)
+			->setCrossAxisOverflow(false)
+	);
+	searchBarContainer->setContentSize(m_searchBarMenu->getContentSize());
+	searchBarContainer->setAnchorPoint({ 0.0f, 0.0f });
+	searchBarContainer->setPosition({ 0.0f, 0.0f });
+	searchBarContainer->setID("search-bar-container");
+	m_searchBarMenu->addChild(searchBarContainer);
+
+	m_searchBar = TextInput::create(367.0f, "Search levels...");
 	m_searchBar->setMaxCharCount(32);
 	m_searchBar->setTextAlign(TextInputAlign::Left);
-	m_searchBar->getInputNode()->setLabelPlaceholderScale(0.6f);
-	m_searchBar->getInputNode()->setMaxLabelScale(0.6f);
-	m_searchBar->setPosition({ 148.0f, 15.0f });
+	m_searchBar->getInputNode()->setLabelPlaceholderScale(0.70f);
+	m_searchBar->getInputNode()->setMaxLabelScale(0.70f);
+	m_searchBar->setScale(0.75f);
 	m_searchBar->setID("search-bar");
-	searchMenu->addChild(m_searchBar);
+	searchBarContainer->addChild(m_searchBar);
 
 	m_searchButton = CCMenuItemSpriteExtra::create(
 		CCSprite::createWithSpriteFrameName("gj_findBtn_001.png"), this, menu_selector(USLListLayer::onSearch)
 	);
 	m_searchButton->setScale(0.7f);
-	m_searchButton->setPosition({ 330.0f, 15.0f });
 	m_searchButton->setID("search-button");
-	searchMenu->addChild(m_searchButton);
+	searchBarContainer->addChild(m_searchButton);
 
 	m_noResultsLabel = CCLabelBMFont::create("No results found", "bigFont.fnt");
 	m_noResultsLabel->setScale(0.5f);
@@ -235,14 +247,18 @@ void USLListLayer::showLoading() {
 	m_firstButton->setVisible(false);
 	m_lastButton->setVisible(false);
 	if (m_pageButton) m_pageButton->setVisible(false);
+	m_searchBarMenu->setVisible(false);
 	m_noResultsLabel->setVisible(false);
 }
 
 void USLListLayer::onSearch(CCObject* sender) {
-	m_query = string::toLower(m_searchBar->getString());
-	m_page = 0;
-	showLoading();
-	populateList();
+	auto query = string::toLower(m_searchBar->getString());
+	if (m_query != query) {
+		m_page = 0;
+		m_query = query;
+		showLoading();
+		populateList();
+	}
 }
 
 void USLListLayer::populateList() {
