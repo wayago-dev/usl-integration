@@ -1,0 +1,58 @@
+{
+	"geode": "5.8.2",
+	"gd": {
+		"win": "2.2081"
+	},
+	"version": "v1.0.0",
+	"id": "wayago.usl-integration",
+	"name": "USL Integration",
+	"developer": "wayago",
+	"description": "Browse the official Ultimate Shitty List demon ranking inside Geometry Dash and play the levels with one click.",
+	"resources": {
+		"sprites": [
+			"resources/*.png"
+		]
+	},
+	"settings": {
+		"api-url": {
+			"type": "string",
+			"name": "USL API URL",
+			"description": "API endpoint that returns the level list as JSON.",
+			"default": "https://ultimateshittylist.space/api/levels"
+		},
+		"levels-per-page": {
+			"type": "int",
+			"name": "Levels per page",
+			"description": "How many levels to show per page in the list.",
+			"default": 10,
+			"min": 5,
+			"max": 50
+		},
+		"enable-main-menu-button": {
+			"type": "bool",
+			"name": "Main menu button",
+			"description": "Show the USL button in the main menu.",
+			"default": true
+		},
+		"enable-search-button": {
+			"type": "bool",
+			"name": "Level search button",
+			"description": "Show the USL button in the level search screen.",
+			"default": true
+		}
+	},
+	"dependencies": {
+		"geode.node-ids": ">=v1.23.3"
+	},
+	"links": {
+		"source": "https://github.com/wayago-dev/usl-integration",
+		"homepage": "https://ultimateshittylist.space"
+	},
+	"tags": [
+		"content",
+		"enhancement",
+		"interface",
+		"online",
+		"utility"
+	]
+}
