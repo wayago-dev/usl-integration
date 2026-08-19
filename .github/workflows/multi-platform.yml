@@ -76,8 +76,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          asset="${{ steps.build.outputs.build-output }}/wayago.usl-integration.geode"
+          test -f "$asset"
           if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" "${{ steps.build.outputs.build-output }}" --repo "$GITHUB_REPOSITORY" --clobber
+            gh release upload "$GITHUB_REF_NAME" "$asset" --repo "$GITHUB_REPOSITORY" --clobber
           else
-            gh release create "$GITHUB_REF_NAME" "${{ steps.build.outputs.build-output }}" --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes
+            gh release create "$GITHUB_REF_NAME" "$asset" --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes
           fi
