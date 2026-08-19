@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.7.1
+
+- GitHub Actions now packages one combined release for Windows, macOS, iOS and Android on version tags.
+- Keeps the `ultimateshittylist.fun` endpoint and in-game automatic updater introduced in v1.7.0.
+
 ## v1.7.0
 
 - Moved the default API and website links to ultimateshittylist.fun
