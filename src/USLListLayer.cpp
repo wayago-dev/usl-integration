@@ -1,5 +1,6 @@
 #include "USLListLayer.hpp"
 #include "USLManager.hpp"
+#include "UpdateInstaller.hpp"
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/binding/CustomListView.hpp>
 #include <Geode/binding/GameLevelManager.hpp>
@@ -301,7 +302,7 @@ bool USLListLayer::scheduleUpdateInstall(std::filesystem::path const& downloaded
 	auto result = ShellExecuteW(nullptr, L"open", scriptPath.wstring().c_str(), nullptr, nullptr, SW_HIDE);
 	return reinterpret_cast<intptr_t>(result) > 32;
 #else
-	return false;
+	return usl::replacePackage(Mod::get()->getPackagePath(), downloadedPath);
 #endif
 }
 

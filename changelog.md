@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.7.3
+
+- Fixed automatic update installation on macOS, iOS and Android.
+
 ## v1.7.2
 
 - Fixed the tag workflow so combined all-platform packages are published as GitHub Releases.
