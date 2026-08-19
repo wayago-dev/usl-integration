@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.7.2
+
+- Fixed the tag workflow so combined all-platform packages are published as GitHub Releases.
+
 ## v1.7.1
 
 - GitHub Actions now packages one combined release for Windows, macOS, iOS and Android on version tags.
