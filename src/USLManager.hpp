@@ -17,6 +17,10 @@ namespace USLManager {
 	bool isLoaded();
 	std::string apiUrl();
 	USLDemon const* findByLevelId(std::string const& levelId);
+	void checkForUpdate(
+		geode::async::TaskHolder<geode::utils::web::WebResponse>& listener,
+		geode::Function<void(std::string, std::string)> available
+	);
 
 	void load(
 		geode::async::TaskHolder<geode::utils::web::WebResponse>& listener,

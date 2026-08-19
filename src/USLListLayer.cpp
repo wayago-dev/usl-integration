@@ -7,8 +7,15 @@
 #include <Geode/binding/GJSearchObject.hpp>
 #include <Geode/binding/LoadingCircle.hpp>
 #include <Geode/binding/SetIDPopup.hpp>
+#include <Geode/loader/Dirs.hpp>
 #include <Geode/loader/Mod.hpp>
 #include <Geode/ui/TextInput.hpp>
+#include <Geode/utils/file.hpp>
+#include <filesystem>
+
+#ifdef GEODE_IS_WINDOWS
+#include <windows.h>
+#endif
 
 using namespace geode::prelude;
 
@@ -188,6 +195,10 @@ bool USLListLayer::init() {
 		}, m_failure);
 	}
 
+	USLManager::checkForUpdate(m_updateListener, [this](std::string version, std::string downloadUrl) {
+		showUpdateBanner(std::move(version), std::move(downloadUrl));
+	});
+
 	return true;
 }
 
@@ -224,6 +235,104 @@ void USLListLayer::onFirst(CCObject* sender) {
 
 void USLListLayer::onLast(CCObject* sender) {
 	page((int)std::ceil((double)m_totalLevels / m_levelsPerPage) - 1);
+}
+
+void USLListLayer::showUpdateBanner(std::string version, std::string downloadUrl) {
+	m_updateVersion = std::move(version);
+	m_updateUrl = std::move(downloadUrl);
+
+	if (m_updateBanner) {
+		m_updateLabel->setString(fmt::format("Update {} available", m_updateVersion).c_str());
+		m_updateButton->setVisible(true);
+		m_updateButton->setEnabled(true);
+		return;
+	}
+
+	auto winSize = CCDirector::get()->getWinSize();
+	auto banner = CCLayerColor::create({ 54, 75, 41, 230 }, 270.0f, 34.0f);
+	banner->setPosition({ winSize.width / 2.0f - 135.0f, winSize.height - 40.0f });
+	banner->setID("update-banner");
+	addChild(banner, 5);
+	m_updateBanner = banner;
+
+	m_updateLabel = CCLabelBMFont::create(fmt::format("Update {} available", m_updateVersion).c_str(), "goldFont.fnt");
+	m_updateLabel->setAnchorPoint({ 0.0f, 0.5f });
+	m_updateLabel->setScale(0.45f);
+	m_updateLabel->setPosition({ 8.0f, 17.0f });
+	m_updateLabel->limitLabelWidth(180.0f, 0.45f, 0.0f);
+	m_updateLabel->setID("update-label");
+	banner->addChild(m_updateLabel);
+
+	auto buttonSprite = CCSprite::createWithSpriteFrameName("GJ_button_01.png");
+	buttonSprite->setScale(0.55f);
+	auto buttonLabel = CCLabelBMFont::create("Get", "bigFont.fnt");
+	buttonLabel->setScale(0.45f);
+	buttonLabel->setPosition(buttonSprite->getContentSize() / 2.0f);
+	buttonSprite->addChild(buttonLabel);
+	m_updateButton = CCMenuItemSpriteExtra::create(buttonSprite, this, menu_selector(USLListLayer::onDownloadUpdate));
+	m_updateButton->setPosition({ 240.0f, 17.0f });
+	m_updateButton->setID("download-update-button");
+
+	auto menu = CCMenu::create();
+	menu->setPosition({ 0.0f, 0.0f });
+	menu->addChild(m_updateButton);
+	banner->addChild(menu);
+}
+
+bool USLListLayer::scheduleUpdateInstall(std::filesystem::path const& downloadedPath) {
+#ifdef GEODE_IS_WINDOWS
+	auto scriptPath = dirs::getTempDir() / "wayago.usl-integration-update.cmd";
+	auto currentPath = Mod::get()->getPackagePath();
+	auto script = fmt::format(
+		"@echo off\r\n"
+		":wait\r\n"
+		"tasklist /FI \"IMAGENAME eq GeometryDash.exe\" /NH | find /I \"GeometryDash.exe\" >nul\r\n"
+		"if not errorlevel 1 (\r\n"
+		"  timeout /t 1 /nobreak >nul\r\n"
+		"  goto wait\r\n"
+		")\r\n"
+		"del /F /Q \"{}\"\r\n"
+		"move /Y \"{}\" \"{}\" >nul\r\n"
+		"del \"%~f0\"\r\n",
+		currentPath.string(), downloadedPath.string(), currentPath.string()
+	);
+	if (!file::writeString(scriptPath, script).isOk()) return false;
+
+	auto result = ShellExecuteW(nullptr, L"open", scriptPath.wstring().c_str(), nullptr, nullptr, SW_HIDE);
+	return reinterpret_cast<intptr_t>(result) > 32;
+#else
+	return false;
+#endif
+}
+
+void USLListLayer::onDownloadUpdate(CCObject*) {
+	if (m_updateUrl.empty()) return;
+
+	m_updateLabel->setString("Downloading update...");
+	m_updateButton->setEnabled(false);
+	auto downloadedPath = dirs::getModsDir() / fmt::format("{}-{}.geode", Mod::get()->getID(), m_updateVersion);
+	m_downloadListener.spawn(
+		web::WebRequest().userAgent("wayago.usl-integration").get(m_updateUrl),
+		[this, downloadedPath](web::WebResponse res) {
+			if (!res.ok() || !res.into(downloadedPath).isOk()) {
+				m_updateLabel->setString("Update download failed");
+				m_updateButton->setEnabled(true);
+				return;
+			}
+
+			auto metadata = ModMetadata::createFromGeodeFile(downloadedPath);
+			if (metadata.hasErrors() || metadata.getID() != Mod::get()->getID() || metadata.getVersion().toVString() != m_updateVersion || !scheduleUpdateInstall(downloadedPath)) {
+				std::error_code error;
+				std::filesystem::remove(downloadedPath, error);
+				m_updateLabel->setString("Update install failed");
+				m_updateButton->setEnabled(true);
+				return;
+			}
+
+			m_updateLabel->setString("Update downloaded - restart game");
+			m_updateButton->setVisible(false);
+		}
+	);
 }
 
 void USLListLayer::showLoading() {

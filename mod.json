@@ -6,7 +6,7 @@
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"version": "v1.6.4",
+	"version": "v1.7.0",
 	"id": "wayago.usl-integration",
 	"name": "USL Integration",
 	"developer": "wayago",
@@ -22,7 +22,7 @@
 			"type": "string",
 			"name": "USL API URL",
 			"description": "API endpoint that returns the level list as JSON.",
-			"default": "https://ultimateshittylist.space/api/levels"
+			"default": "https://ultimateshittylist.fun/api/levels"
 		},
 		"levels-per-page": {
 			"type": "int",
@@ -50,7 +50,7 @@
 	},
 	"links": {
 		"source": "https://github.com/wayago-dev/usl-integration",
-		"homepage": "https://ultimateshittylist.space"
+		"homepage": "https://ultimateshittylist.fun"
 	},
 	"tags": [
 		"content",

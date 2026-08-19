@@ -1,6 +1,6 @@
 # USL Integration
 
-Browse the official [Ultimate Shitty List](https://ultimateshittylist.space) demon ranking right inside Geometry Dash.
+Browse the official [Ultimate Shitty List](https://ultimateshittylist.fun) demon ranking right inside Geometry Dash.
 
 ## Features
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.7.0
+
+- Moved the default API and website links to ultimateshittylist.fun
+- Added an in-game update banner that downloads the latest GitHub release and installs it after the game is restarted
+
 ## v1.6.4
 
 - Search bar now copied verbatim from IntegratedDemonlist: CCMenu at the top of the list, explicit input/button positions, no layout container - sits flush under the title bar like the reference mod

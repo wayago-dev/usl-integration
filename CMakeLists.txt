@@ -11,7 +11,7 @@ endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(GEODE_DISABLE_PRECOMPILED_HEADERS ON)
 
-project(usl-integration VERSION 1.6.0)
+project(usl-integration VERSION 1.7.0)
 
 file(GLOB_RECURSE SOURCES
 	src/*.cpp

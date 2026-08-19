@@ -1,5 +1,6 @@
 #include "USLManager.hpp"
 #include <Geode/loader/Mod.hpp>
+#include <Geode/utils/VersionInfo.hpp>
 
 using namespace geode::prelude;
 
@@ -23,6 +24,36 @@ USLDemon const* USLManager::findByLevelId(std::string const& levelId) {
 		if (demon.levelId == levelId) return &demon;
 	}
 	return nullptr;
+}
+
+void USLManager::checkForUpdate(TaskHolder<web::WebResponse>& listener, Function<void(std::string, std::string)> available) {
+	listener.spawn(
+		web::WebRequest()
+			.userAgent("wayago.usl-integration")
+			.header("Accept", "application/vnd.github+json")
+			.get("https://api.github.com/repos/wayago-dev/usl-integration/releases/latest"),
+		[available = std::move(available)](web::WebResponse res) mutable {
+			if (!res.ok()) return;
+
+			auto json = res.json();
+			if (!json.isOk()) return;
+
+			auto release = std::move(json).unwrap();
+			auto tagName = release.get<std::string>("tag_name");
+			if (!tagName.isOk()) return;
+
+			auto version = VersionInfo::parse(tagName.unwrap());
+			if (!version.isOk() || version.unwrap() <= Mod::get()->getVersion()) return;
+
+			for (auto& asset : release["assets"]) {
+				auto downloadUrl = asset.get<std::string>("browser_download_url");
+				if (downloadUrl.isOk() && downloadUrl.unwrap().ends_with(".geode")) {
+					available(tagName.unwrap(), downloadUrl.unwrap());
+					return;
+				}
+			}
+		}
+	);
 }
 
 void USLManager::load(TaskHolder<web::WebResponse>& listener, Function<void()> success, CopyableFunction<void(int)> failure) {
