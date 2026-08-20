@@ -1,4 +1,5 @@
 #include "USLManager.hpp"
+#include "ApiUrl.hpp"
 #include <Geode/loader/Mod.hpp>
 #include <Geode/utils/VersionInfo.hpp>
 
@@ -16,7 +17,12 @@ bool USLManager::isLoaded() {
 }
 
 std::string USLManager::apiUrl() {
-	return Mod::get()->getSettingValue<std::string>("api-url");
+	auto url = Mod::get()->getSettingValue<std::string>("api-url");
+	auto resolved = usl::resolveApiUrl(url);
+	if (resolved != url) {
+		Mod::get()->setSettingValue("api-url", resolved);
+	}
+	return resolved;
 }
 
 USLDemon const* USLManager::findByLevelId(std::string const& levelId) {

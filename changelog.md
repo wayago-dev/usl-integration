@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.7.4
+
+- Migrates saved API settings from the retired ultimateshittylist.space endpoint to ultimateshittylist.fun while preserving custom endpoints.
+
 ## v1.7.3
 
 - Fixed automatic update installation on macOS, iOS and Android.

@@ -19,8 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Test package replacement
-        run: g++ -std=c++23 tests/update-installer-test.cpp -o /tmp/update-installer-test && /tmp/update-installer-test
+      - name: Run tests
+        run: |
+          g++ -std=c++23 tests/update-installer-test.cpp -o /tmp/update-installer-test
+          /tmp/update-installer-test
+          g++ -std=c++23 tests/api-url-test.cpp -o /tmp/api-url-test
+          /tmp/api-url-test
 
   build:
     strategy:
